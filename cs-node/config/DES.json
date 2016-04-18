@@ -1,0 +1,5 @@
+﻿{
+  "database": "mongodb://localhost/csnode",
+  "porta": 3000,
+  "secret": "t0pS3cr3t"
+}

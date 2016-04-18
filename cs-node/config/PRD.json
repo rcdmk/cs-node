@@ -1,0 +1,5 @@
+﻿{
+  "database": "mongodb://csnode:csnode123@ds011281.mlab.com:11281/csnode",
+  "porta": null,
+  "secret": "t0pS3cr3t"
+}
