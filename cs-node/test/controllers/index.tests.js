@@ -58,7 +58,7 @@ describe('Módulo CarregarControllers', function () {
 		});
 	});
 
-	it('deve retornar erro caso a leitura de diretório retorno um erro', function (done) {
+	it('deve retornar erro caso a leitura de diretório retorne um erro', function (done) {
 		var erroEsperado = new Error('ERRO!');
 
 		fsMock.readdir = function (caminho, cb) {

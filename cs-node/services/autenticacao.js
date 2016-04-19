@@ -41,7 +41,7 @@ AutenticacaoService.prototype.autenticarUsuario = function AutenticarUsuario(dad
 				id: usuario.id,
 				email: usuario.email
 			}, config.secret, {
-				expiresInMinutes: config.expiracao_token_minutos
+				expiresIn: config.expiracao_token_minutos * 60
 			}, function jwtSign(token) {
 				usuario.token = token;
 				usuario.ultimo_login = Date.now();
