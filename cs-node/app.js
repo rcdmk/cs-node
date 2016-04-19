@@ -25,6 +25,7 @@ var app = express();
 // configurações
 app.set('port', config.porta || process.env.PORT || 3000);
 app.set('secret', config.secret);
+app.set('config', config);
 
 mongoose.connect(config.database);
 mongoose.connection.on('error', function (err) {

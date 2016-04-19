@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var debug = require('debug')('cs-node: ' + process.pid);
+var mongoose = require('mongoose');
 
 /**
  * Carrega todos os controllers da pasta controllers
@@ -21,7 +22,7 @@ var CarregarControllers = function CarregarControllers(app, done) {
                 nome = arquivo.substr(0, arquivo.length - 3);
                 controller = require('./' + arquivo);
 
-                app.use('/' + nome, controller);
+                app.use('/' + nome, controller(app, mongoose));
                 debug('Carregadas rotas de /' + nome);
             }
         });
