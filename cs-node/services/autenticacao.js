@@ -10,7 +10,7 @@ var config = require('../config')(process.env.NODE_ENV);
  * @param model {Object} Uma instância de de um modelo para banco de dados
  */
 var AutenticacaoService = function AutenticacaoService(model) {
-    this.db = model;
+  this.db = model;
 };
 
 /**
@@ -23,39 +23,42 @@ var AutenticacaoService = function AutenticacaoService(model) {
  *	@option dados {Object} Um objeto com os dados do usuário autenticado
  */
 AutenticacaoService.prototype.autenticarUsuario = function AutenticarUsuario(dados, cb) {
-    if (!dados.email || !dados.senha) {
-		var erro = new Error('Usuário e/ou senha inválidos');
-		erro.name = 'UsuarioOusenhaInvalidos';
-		
-		return cb(erro);
+  if (!dados.email || !dados.senha) {
+    var erro = new Error('Usuário e/ou senha inválidos');
+    erro.name = 'UsuarioOusenhaInvalidos';
+
+    return cb(erro);
+  }
+
+  this.db.findOne({
+    email: dados.email,
+    senha: this.db.prototype.codificarSenha(dados.senha)
+  }, function(err, usuario) {
+    if (err || !usuario) {
+      var erro = new Error('Usuário e/ou senha inválidos');
+      erro.name = 'UsuarioOusenhaInvalidos';
+
+      return cb(erro);
+    } else {
+      var token = jwt.sign({
+        id: usuario.id,
+        email: usuario.email
+      }, config.secret, {
+        expiresIn: config.expiracao_token_minutos * 60
+      }, function jwtSign(token) {
+        usuario.token = token;
+        usuario.ultimo_login = Date.now();
+
+        usuario.save(function(err, dados) {
+          if (err) {
+            return cb(err);
+          }
+
+          cb(null, usuario.pegarJSON());
+        });
+      });
     }
-
-    this.db.findOne({ email: dados.email, senha: this.db.prototype.codificarSenha(dados.senha) }, function (err, usuario) {
-        if (err || !usuario) {
-            var erro = new Error('Usuário e/ou senha inválidos');
-            erro.name = 'UsuarioOusenhaInvalidos';
-
-            return cb(erro);
-        } else {			
-			var token = jwt.sign({
-				id: usuario.id,
-				email: usuario.email
-			}, config.secret, {
-				expiresIn: config.expiracao_token_minutos * 60
-			}, function jwtSign(token) {
-				usuario.token = token;
-				usuario.ultimo_login = Date.now();
-				
-				usuario.save(function (err, dados) {
-					if (err) {
-						return cb(err);
-					}
-					
-					cb(null, usuario.pegarJSON());
-				});
-			});
-        }
-    });
+  });
 };
 
 
