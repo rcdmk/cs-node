@@ -49,7 +49,7 @@ app.use(function configMiddleware(req, res, next) {
 });
 
 // segurança com token
-app.use(jwt({ secret: config.secret }).unless({ path: [ '/usuarios', '/autenticacao' ] }));
+app.use(jwt({ secret: config.secret }).unless({ path: ['/usuarios', '/autenticacao', '/usuarios/', '/autenticacao/' ] }));
 
 
 // validação de entrada
