@@ -35,11 +35,7 @@ describe('Controller Autenticação', function () {
 			}
 		};
 		
-		autenticacaoServiceMock = {
-			autenticarUsuario: function (dados, cb) {
-				cb(null, dados);
-			}
-		};
+		autenticacaoServiceMock = {};
 		
 		delete mongoose.connection.models['Usuario']; // necessário para evitar erro com o rewire
 		controller = rewire('../../controllers/autenticacao');
@@ -62,11 +58,15 @@ describe('Controller Autenticação', function () {
 	});
 	
 	beforeEach(function () {
+		autenticacaoServiceMock.autenticarUsuario = function (dados, cb) {
+			cb(null, dados);
+		};
+		
 		req.body = {
 			email: 'email@teste.com',
 			senha: 'senha'
 		};
-
+		
 		req._validationErrors = []; // zerar erros de validação para cada teste
 	});
 	
@@ -80,122 +80,142 @@ describe('Controller Autenticação', function () {
 		controller(app, db);
 	});
 	
-	
-	describe('Validação', function () {
-		beforeEach(function () {
-			routerMock.post = function (rota, cb) {
-				cb(req, res);
-			};
+	describe('para a rota POST /autenticacao', function () {
+		describe('na Validação', function () {
+			beforeEach(function () {
+				routerMock.post = function (rota, cb) {
+					cb(req, res);
+				};
+				
+				res.status = function (status) {
+					expect(status).to.be.equal(400);
+					return res;
+				};
+			});
+			
+			it('deve retornar erro se o email não for informado', function (done) {
+				delete req.body.email;
+				
+				res.json = function (err) {
+					expect(err).to.not.be(null);
+					expect(err).to.have.property('erros');
+					expect(err.erros).to.have.length(2);
+					
+					var erro = err.erros[0];
+					expect(erro).to.have.property('parametro').equal('email');
+					expect(erro).to.have.property('mensagem').equal('Informe o email');
+					
+					erro = err.erros[1];
+					expect(erro).to.have.property('parametro').equal('email');
+					expect(erro).to.have.property('mensagem').equal('E-mail inválido');
+					
+					done();
+				}
+				
+				controller(app, db);
+			});
+			
+			it('deve retornar erro se o email for inválido', function (done) {
+				req.body.email = 'emailinvalido@teste';
+				
+				res.json = function (err) {
+					expect(err).to.not.be(null);
+					expect(err).to.have.property('erros');
+					expect(err.erros).to.have.length(1);
+					
+					var erro = err.erros[0];
+					expect(erro).to.have.property('parametro').equal('email');
+					expect(erro).to.have.property('mensagem').equal('E-mail inválido');
+					
+					done();
+				}
+				
+				controller(app, db);
+			});
+			
+			it('deve retornar erro se a senha não for informada', function (done) {
+				delete req.body.senha;
+				
+				res.json = function (err) {
+					expect(err).to.not.be(null);
+					expect(err).to.have.property('erros');
+					expect(err.erros).to.have.length(1);
+					
+					var erro = err.erros[0];
+					expect(erro).to.have.property('parametro').equal('senha');
+					expect(erro).to.have.property('mensagem').equal('Informe a senha');
+					
+					done();
+				}
+				
+				controller(app, db);
+			});
 		});
 		
-		it('deve retornar erro se o email não for informado', function (done) {
-			delete req.body.email;
-			
-			res.json = function (err) {
-				expect(err).to.not.be(null);
-				expect(err).to.have.property('erros');
-				expect(err.erros).to.have.length(2);
-				
-				var erro = err.erros[0];
-				expect(erro).to.have.property('parametro').equal('email');
-				expect(erro).to.have.property('mensagem').equal('Informe o email');
-				
-				erro = err.erros[1];
-				expect(erro).to.have.property('parametro').equal('email');
-				expect(erro).to.have.property('mensagem').equal('E-mail inválido');
-				
-				done();
-			}
-			
-			controller(app, db);
-		});
 		
-		it('deve retornar erro se o email for inválido', function (done) {
-			req.body.email = 'emailinvalido@teste';
-			
-			res.json = function (err) {
-				expect(err).to.not.be(null);
-				expect(err).to.have.property('erros');
-				expect(err.erros).to.have.length(1);
+		describe('ao executar AutenticacaoService.autenticarUsuario()', function () {
+			it('deve receber os parâmetros enviados no formato esperado', function (done) {
+				var dadosEsperados = {
+					email: req.body.email,
+					senha: req.body.senha
+				};
 				
-				var erro = err.erros[0];
-				expect(erro).to.have.property('parametro').equal('email');
-				expect(erro).to.have.property('mensagem').equal('E-mail inválido');
+				autenticacaoServiceMock.autenticarUsuario = function (dados, cb) {
+					expect(dados).to.be.eql(dadosEsperados);
+					done();
+				};
 				
-				done();
-			}
+				controller(app, db);
+			});
 			
-			controller(app, db);
-		});
-		
-		it('deve retornar erro se a senha não for informada', function (done) {
-			delete req.body.senha;
-			
-			res.json = function (err) {
-				expect(err).to.not.be(null);
-				expect(err).to.have.property('erros');
-				expect(err.erros).to.have.length(1);
+			it('deve retornar sucesso se todos os valores necessários forem informados corretamente', function (done) {
+				var dadosEsperados = {
+					email: 'email@teste.com',
+					senha: 'senha'
+				};
 				
-				var erro = err.erros[0];
-				expect(erro).to.have.property('parametro').equal('senha');
-				expect(erro).to.have.property('mensagem').equal('Informe a senha');
+				res.json = function (obj) {
+					expect(obj).to.be.eql(dadosEsperados);
+					done();
+				};
 				
-				done();
-			}
+				controller(app, db);
+			});
 			
-			controller(app, db);
+			it('deve retornar erro 401 caso o serviço retorne erro UsuarioOusenhaInvalidos', function (done) {
+				autenticacaoServiceMock.autenticarUsuario = function (dados, cb) {
+					cb({
+						name: 'UsuarioOusenhaInvalidos',
+						message: 'Usuário ou senha inválidos.'
+					});
+				};
+				
+				req.next = function (err) {
+					expect(err).to.not.be(null);
+					expect(err).to.have.property('status').equal(401);
+					expect(err).to.have.property('message').equal('Usuário ou senha inválidos.');
+					
+					done();
+				};
+				
+				controller(app, db);
+			});
+			
+			it('deve retornar erro 503 caso ocorra erro no serviço', function (done) {
+				autenticacaoServiceMock.autenticarUsuario = function (dados, cb) {
+					cb(new Error('ERRO!!!'));
+				};
+				
+				req.next = function (err) {
+					expect(err).to.not.be(null);
+					expect(err).to.have.property('status').equal(503);
+					expect(err).to.have.property('message').equal('Serviço temporariamente indisponível');
+					
+					done();
+				};
+				
+				controller(app, db);
+			});
 		});
 	});
-
-
-	describe('AutenticacaoService', function () {		
-		it('deve retornar sucesso se todos os valores necessários forem informados corretamente', function (done) {
-			var dadosEsperados = {
-				email: 'email@teste.com',
-				senha: 'senha'
-			};
-			
-			res.json = function (obj) {
-				expect(obj).to.be.eql(dadosEsperados);
-				done();
-			};
-			
-			controller(app, db);
-		});
-
-		it('deve retornar erro 401 caso o serviço retorne erro UsuarioOusenhaInvalidos', function (done) {
-			autenticacaoServiceMock.autenticarUsuario = function (dados, cb) {
-				cb({
-					name: 'UsuarioOusenhaInvalidos',
-					message: 'Usuário ou senha inválidos.'
-				});
-			};
-			
-			req.next = function (err) {
-				expect(err).to.not.be(null);
-				expect(err).to.have.property('status').equal(401);
-				expect(err).to.have.property('message').equal('Usuário ou senha inválidos.');
-				
-				done();
-			};
-			
-			controller(app, db);
-		});
-
-		it('deve retornar erro 503 caso ocorra erro no serviço', function (done) {
-			autenticacaoServiceMock.autenticarUsuario = function (dados, cb) {
-				cb(new Error('ERRO!!!'));
-			};
-			
-			req.next = function (err) {
-				expect(err).to.not.be(null);
-				expect(err).to.have.property('status').equal(503);
-				expect(err).to.have.property('message').equal('Serviço temporariamente indisponível');
-				
-				done();
-			};
-			
-			controller(app, db);
-		});
-	});
-})
+});
