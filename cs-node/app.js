@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var methodOverride = require('express-method-override');
 var helmet = require('helmet');
 var mongoose = require('mongoose');
+var jwt = require('express-jwt');
 
 var config = require('./config')(process.env.NODE_ENV);
 
@@ -39,6 +40,15 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(methodOverride());
 app.use(helmet());
+
+app.use(function configMiddleware(req, res, next) {
+	req.config = config;
+
+	next();
+});
+
+// segurança com token
+app.use(jwt({ secret: config.secret }).unless({ path: [ '/usuarios', '/autenticacao' ] }));
 
 
 // validação de entrada
