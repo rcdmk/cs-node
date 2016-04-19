@@ -25,7 +25,7 @@ var carregaControllerDoArquivo = function carregaControllerDoArquivo(app, arquiv
  * @param done {Function} Uma função de callback para executar ao concluir execução
  */
 var CarregarControllers = function CarregarControllers(app, done) {
-    fs.readdir('./', function (err, arquivos) {
+    fs.readdir(__dirname, function (err, arquivos) {
         if (err) {
             return done(err);
         }
