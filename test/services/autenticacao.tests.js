@@ -141,7 +141,7 @@ describe('Service Autenticação', function () {
       
       dadosUsuario.save = function () {
         expect(this).to.have.property('token').equal('tokencodificado');
-        expect(this).to.have.property('ultimo_login').within(agora - 100, agora);
+        expect(this).to.have.property('ultimo_login').within(agora - 1000, agora + 1000);
         done();
       };
       
@@ -177,7 +177,7 @@ describe('Service Autenticação', function () {
         expect(dados).to.have.property('id').equal(retornoEsperado.id);
         expect(dados).to.have.property('email').equal(retornoEsperado.email);
         expect(dados).to.have.property('token').equal(retornoEsperado.token);
-        expect(dados).to.have.property('ultimo_login').within(retornoEsperado.ultimo_login - 100, retornoEsperado.ultimo_login);
+        expect(dados).to.have.property('ultimo_login').within(retornoEsperado.ultimo_login - 1000, retornoEsperado.ultimo_login + 1000);
         done(err);
       });
     });
