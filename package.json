@@ -7,8 +7,9 @@
   },
   "main": "./bin/www",
   "scripts": {
-    "start": "node ./bin/www",
-    "test": "mocha ./test/**/*.tests.js -R spec"
+    "start": "node ./bin/www --no-deprecation",
+    "test": "mocha ./test/**/*.tests.js -R spec --no-deprecation",
+    "build": "gulp"
   },
   "description": "cs-node",
   "author": {
@@ -31,6 +32,9 @@
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
+    "gulp": "^3.9.1",
+    "gulp-jshint": "^2.0.0",
+    "jshint": "^2.9.2",
     "mocha": "^2.4.5",
     "rewire": "^2.5.1"
   },

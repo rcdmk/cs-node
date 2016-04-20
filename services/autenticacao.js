@@ -26,21 +26,21 @@ AutenticacaoService.prototype.autenticarUsuario = function AutenticarUsuario(dad
   if (!dados.email || !dados.senha) {
     var erro = new Error('Usuário e/ou senha inválidos');
     erro.name = 'UsuarioOusenhaInvalidos';
-
+    
     return cb(erro);
   }
-
+  
   this.db.findOne({
     email: dados.email,
     senha: this.db.prototype.codificarSenha(dados.senha)
-  }, function(err, usuario) {
+  }, function (err, usuario) {
     if (err || !usuario) {
       var erro = new Error('Usuário e/ou senha inválidos');
       erro.name = 'UsuarioOusenhaInvalidos';
-
+      
       return cb(erro);
     } else {
-      var token = jwt.sign({
+      jwt.sign({
         id: usuario.id,
         email: usuario.email
       }, config.secret, {
@@ -48,13 +48,13 @@ AutenticacaoService.prototype.autenticarUsuario = function AutenticarUsuario(dad
       }, function jwtSign(token) {
         usuario.token = token;
         usuario.ultimo_login = Date.now();
-
-        usuario.save(function(err, dados) {
+        
+        usuario.save(function (err, dados) {
           if (err) {
             return cb(err);
           }
-
-          cb(null, usuario.pegarJSON());
+          
+          cb(null, dados.pegarJSON());
         });
       });
     }

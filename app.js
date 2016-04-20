@@ -29,9 +29,9 @@ app.set('config', config);
 
 mongoose.connect(config.database);
 mongoose.connection.on('error', function (err) {
-    console.error("Erro ao conectar ao MongoDB");
-    debug('Erro ao conectar ao MongoDB: ' + err);
-    process.exit();
+  console.error("Erro ao conectar ao MongoDB");
+  debug('Erro ao conectar ao MongoDB: ' + err);
+  process.exit();
 });
 
 
@@ -43,13 +43,13 @@ app.use(methodOverride());
 app.use(helmet());
 
 app.use(function configMiddleware(req, res, next) {
-	req.config = config;
-
-	next();
+  req.config = config;
+  
+  next();
 });
 
 // segurança com token
-app.use(jwt({ secret: config.secret }).unless({ path: ['/usuarios', '/autenticacao', '/usuarios/', '/autenticacao/' ] }));
+app.use(jwt({ secret: config.secret }).unless({ path: ['/usuarios', '/autenticacao', '/usuarios/', '/autenticacao/'] }));
 
 
 // validação de entrada
@@ -58,13 +58,13 @@ app.use(validacao());
 
 // configurar rotas
 contollers.carregarControllers(app, function (err) {
-    if (err) {
-        debug('Erro ao carregar rotas!');
-    } else {
-        // tratamento de erros
-        app.use(erro404);
-        app.use(gerenciadorDeErros);
-    }
+  if (err) {
+    debug('Erro ao carregar rotas!');
+  } else {
+    // tratamento de erros
+    app.use(erro404);
+    app.use(gerenciadorDeErros);
+  }
 });
 
 

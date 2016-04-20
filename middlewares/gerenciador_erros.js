@@ -39,6 +39,8 @@ var GerenciadorDeErros = function gerenciadorDeErros(err, req, res, next) {
   }
   
   res.json(resposta);
+
+  next(err);
 };
 
 module.exports = GerenciadorDeErros;

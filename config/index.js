@@ -1,8 +1,9 @@
-﻿var env = process.env;
+﻿'use strict';
 
+/** Configurações disponíveis */
 var configuracoes = {
-    development: require('./DES.json'),
-    production: require('./PRD.json')
+  development: require('./DES.json'),
+  production: require('./PRD.json')
 };
 
 /**
@@ -11,9 +12,9 @@ var configuracoes = {
  *	@remarks Caso não seja fornecido um ambiente ou seja fornecido um ambiente inválido, será assumido o ambiente de desenvolvimento (development)
  */
 var Config = function Config(ambiente) {
-    this.ambiente = ambiente || 'development';
-    
-    return configuracoes[this.ambiente] || configuracoes.development;
+  ambiente = ambiente || 'development';
+  
+  return configuracoes[ambiente] || configuracoes.development;
 };
 
 module.exports = Config;

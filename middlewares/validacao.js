@@ -20,7 +20,7 @@ var validacaoEntrada = function validacaoEntrada() {
         return Array.isArray(value);
       }
     }
-  })
+  });
 };
 
 module.exports = validacaoEntrada;

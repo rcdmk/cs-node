@@ -6,10 +6,10 @@
  * @param erros {Array} A lista de erros de validação
  */
 var formatarErrosValidacao = function formatarErrosValidacao(res, erros) {
-    return res.status(400).json({
-        message: 'Alguns dados enviados são inválidos.',
-        erros: erros
-    });
+  return res.status(400).json({
+    message: 'Alguns dados enviados são inválidos.',
+    erros: erros
+  });
 };
 
 
@@ -18,12 +18,12 @@ var formatarErrosValidacao = function formatarErrosValidacao(res, erros) {
  * @param next {Function} A callback do middleware do express
  */
 var retornarErro404 = function formatarErro404(next) {
-    var err = {
-        message: 'Recurso não encontrado',
-        status: 404
-    };
-    
-    next(err);
+  var err = {
+    message: 'Recurso não encontrado',
+    status: 404
+  };
+  
+  next(err);
 };
 
 
@@ -33,17 +33,17 @@ var retornarErro404 = function formatarErro404(next) {
  * @param next {Function} A callback do middleware do express
 */
 var retornarErro503 = function formatarErro503(err, next) {
-    var err = {
-        message: 'Serviço temporariamente indisponível',
-        status: 503,
-        err: err
-    };
-    
-    next(err);
+  var erro = {
+    message: 'Serviço temporariamente indisponível',
+    status: 503,
+    err: err
+  };
+  
+  next(erro);
 };
 
 module.exports = {
-    formatarErrosValidacao: formatarErrosValidacao,
-    retornarErro404: retornarErro404,
-    retornarErro503: retornarErro503
+  formatarErrosValidacao: formatarErrosValidacao,
+  retornarErro404: retornarErro404,
+  retornarErro503: retornarErro503
 };

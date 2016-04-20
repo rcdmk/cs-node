@@ -102,7 +102,7 @@ describe('Middleware para tratamento de erros', function () {
   
   it('deve retornar o objeto de erro com os detalhes do erro e parâmetros da requisição', function (done) {
     req.config.ambiente = 'desenvolvimento';
-
+    
     var erro = new Error('Outro erro');
     
     var erroEsperado = {

@@ -5,7 +5,7 @@
  * @param model {Object} Uma instância de de um modelo para banco de dados
  */
 var UsuariosService = function UsuariosService(model) {
-    this.db = model;
+  this.db = model;
 };
 
 /**
@@ -14,13 +14,13 @@ var UsuariosService = function UsuariosService(model) {
  * @see /models/usuario_model.js
  */
 UsuariosService.prototype.registrar = function RegistrarUsuario(usuario, cb) {
-    this.db.create(usuario, function (err, dados) {
-        if (err) {
-            return cb(err);
-        }
-        
-        cb(null, dados.pegarJSON());
-    });
+  this.db.create(usuario, function (err, dados) {
+    if (err) {
+      return cb(err);
+    }
+    
+    cb(null, dados.pegarJSON());
+  });
 };
 
 /**
@@ -28,13 +28,13 @@ UsuariosService.prototype.registrar = function RegistrarUsuario(usuario, cb) {
  * @param idUsuario {String} O ID do usuário para obter
  */
 UsuariosService.prototype.obterPorId = function ObterUsuario(idUsuario, cb) {
-    this.db.findById(idUsuario, function (err, dados) {
-        if (err || !dados) {
-            cb(err);
-        } else {
-            cb(null, dados.pegarJSON());
-        }
-    });
+  this.db.findById(idUsuario, function (err, dados) {
+    if (err || !dados) {
+      cb(err);
+    } else {
+      cb(null, dados.pegarJSON());
+    }
+  });
 };
 
 
