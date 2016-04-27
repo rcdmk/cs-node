@@ -9,6 +9,8 @@
   "scripts": {
     "start": "node ./bin/www --no-deprecation",
     "test": "mocha ./test/**/*.tests.js -R spec --no-deprecation",
+    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha -- ./test/**/*.tests.js",
+    "check-coverage": "istanbul check-coverage",
     "build": "gulp"
   },
   "description": "cs-node",
@@ -33,8 +35,10 @@
   "devDependencies": {
     "expect.js": "^0.3.1",
     "gulp": "^3.9.1",
+    "gulp-istanbul": "^0.10.4",
     "gulp-jshint": "^2.0.0",
     "gulp-mocha": "^2.2.0",
+    "istanbul": "^0.4.3",
     "jshint": "^2.9.2",
     "mocha": "^2.4.5",
     "rewire": "^2.5.1"
