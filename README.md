@@ -66,8 +66,8 @@ Autenticação do usuário para obter o token.
 
 ```json
 {
-  "nome": "Nome usuário",
-  "email": "email@testes.com"
+  "email": "email@testes.com",
+  "senha": "supersecreta"
 }
 ```
 
