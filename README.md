@@ -39,8 +39,8 @@ Cadastro de usuários para autenticação e consulta.
 
 **Resposta:**
 
->**HTTP Status:** 201  
->**Headers:** Location /usuarios/[id_usuario]  
+>**HTTP Status:** 201
+>**Headers:** Location /usuarios/\[id_usuario\]  
 >(**id_usuario** vem preenchido com o id do usuário criado)
 
 ```json
@@ -98,7 +98,7 @@ Obtém os dados do usuário solicitado.
 
 **Envio:**
 
->**Headers:** Authorization: Bearer [token]  
+>**Headers:** Authorization: Bearer \[token\]  
 >(**token** deve ser preenchido com o token de autorização do usuário, obtido na autenticação)
 
 **Resposta:**
