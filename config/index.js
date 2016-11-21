@@ -3,7 +3,8 @@
 /** Configurações disponíveis */
 var configuracoes = {
   development: require('./DES.json'),
-  production: require('./PRD.json')
+  production: require('./PRD.json'),
+  test: require('./TEST.json')
 };
 
 /**
@@ -13,7 +14,7 @@ var configuracoes = {
  */
 var Config = function Config(ambiente) {
   ambiente = ambiente || 'development';
-  
+
   return configuracoes[ambiente] || configuracoes.development;
 };
 

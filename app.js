@@ -10,8 +10,8 @@ var helmet = require('helmet');
 var mongoose = require('mongoose');
 var jwt = require('express-jwt');
 
-var config = require('./config')(process.env.NODE_ENV);
 
+var config = require('./middlewares/config.js');
 var validacao = require('./middlewares/validacao.js');
 
 var contollers = require('./controllers');
@@ -23,11 +23,11 @@ var gerenciadorDeErros = require('./middlewares/gerenciador_erros');
 var app = express();
 
 // configurações
-app.set('port', config.porta || process.env.PORT || 3000);
-app.set('secret', config.secret);
-app.set('config', config);
+config(app, process.env.NODE_ENV);
 
-mongoose.connect(config.database);
+var appConfig = app.get('config');
+
+mongoose.connect(appConfig.database);
 mongoose.connection.on('error', function (err) {
   console.error("Erro ao conectar ao MongoDB");
   debug('Erro ao conectar ao MongoDB: ' + err);
@@ -42,18 +42,11 @@ app.use(cookieParser());
 app.use(methodOverride());
 app.use(helmet());
 
-app.use(function configMiddleware(req, res, next) {
-  req.config = config;
-  
-  next();
-});
-
-// segurança com token
-app.use(jwt({ secret: config.secret }).unless({ path: ['/usuarios', '/autenticacao', '/usuarios/', '/autenticacao/'] }));
-
-
 // validação de entrada
 app.use(validacao());
+
+// segurança com token
+app.use(['/usuarios/:id_usuario', '/usuarios/:id_usuario/'], jwt({ secret: appConfig.secret }));
 
 
 // configurar rotas

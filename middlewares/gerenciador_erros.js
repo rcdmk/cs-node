@@ -11,7 +11,7 @@ var debug = require('debug')('cs-node: ' + process.pid);
  */
 var GerenciadorDeErros = function gerenciadorDeErros(err, req, res, next) {
   debug(err);
-  
+
   // erro na autorização via token
   if (err.name === 'UnauthorizedError') {
     err = {
@@ -20,24 +20,24 @@ var GerenciadorDeErros = function gerenciadorDeErros(err, req, res, next) {
       err: err
     };
   }
-  
+
   res.status(err.status || 500);
-  
+
   var resposta = {
     mensagem: err.message || 'Erro interno do servidor'
   };
-  
-  if (req.config.ambiente == 'desenvolvimento') {
+
+  if (req.config.ambiente === 'desenvolvimento') {
     resposta.req = {
       headers: req.headers,
       params: req.params,
       query: req.query,
       body: req.body
     };
-    
+
     resposta.erro = err.stack || (err.err && err.err.stack) || err.err;
   }
-  
+
   res.json(resposta);
 
   next(err);
