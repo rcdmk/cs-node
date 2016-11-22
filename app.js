@@ -8,11 +8,11 @@ var bodyParser = require('body-parser');
 var methodOverride = require('express-method-override');
 var helmet = require('helmet');
 var mongoose = require('mongoose');
-var jwt = require('express-jwt');
 
 
-var config = require('./middlewares/config.js');
-var validacao = require('./middlewares/validacao.js');
+var configurar = require('./middlewares/config');
+var validacao = require('./middlewares/validacao');
+var configurarAutorizacao = require('./middlewares/autorizacao')
 
 var contollers = require('./controllers');
 
@@ -23,10 +23,11 @@ var gerenciadorDeErros = require('./middlewares/gerenciador_erros');
 var app = express();
 
 // configurações
-config(app, process.env.NODE_ENV);
+configurar(app, process.env.NODE_ENV);
 
 var appConfig = app.get('config');
 
+// configurar mongo
 mongoose.connect(appConfig.database);
 mongoose.connection.on('error', function (err) {
   console.error("Erro ao conectar ao MongoDB");
@@ -46,8 +47,7 @@ app.use(helmet());
 app.use(validacao());
 
 // segurança com token
-app.use(['/usuarios/:id_usuario', '/usuarios/:id_usuario/'], jwt({ secret: appConfig.secret }));
-
+configurarAutorizacao(app);
 
 // configurar rotas
 contollers.carregarControllers(app, function (err) {
