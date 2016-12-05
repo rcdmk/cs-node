@@ -7,12 +7,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var methodOverride = require('express-method-override');
 var helmet = require('helmet');
-var mongoose = require('mongoose');
-
 
 var configurar = require('./middlewares/config');
+var configurarMongoose = require('./utils/mongoose');
 var validacao = require('./middlewares/validacao');
-var configurarAutorizacao = require('./middlewares/autorizacao')
+var configurarAutorizacao = require('./middlewares/autorizacao');
 
 var contollers = require('./controllers');
 
@@ -28,17 +27,7 @@ configurar(app, process.env.NODE_ENV);
 var appConfig = app.get('config');
 
 // configurar mongo (variáveis de ambiente sobrescrevem configurações)
-mongoose.connect(process.env.DB_URL || appConfig.database.url, {
-  user: process.env.DB_USER || appConfig.database.user,
-  pass: process.env.DB_PASS || appConfig.database.password
-});
-
-mongoose.connection.on('error', function (err) {
-  console.error("Erro ao conectar ao MongoDB");
-  debug('Erro ao conectar ao MongoDB: ' + err);
-  process.exit();
-});
-
+configurarMongoose(appConfig.database);
 
 // configurar middlewares padrão
 app.use(logger('dev'));
@@ -63,6 +52,5 @@ contollers.carregarControllers(app, function (err) {
     app.use(gerenciadorDeErros);
   }
 });
-
 
 module.exports = app;
