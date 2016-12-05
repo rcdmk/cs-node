@@ -1,6 +1,10 @@
 ﻿{
   "ambiente": "produção",
-  "database": "mongodb://csnode:csnode123@ds011281.mlab.com:11281/csnode",
+  "database": {
+    "url": "mongodb://ds011281.mlab.com:11281/csnode",
+    "user": "",
+    "password": ""
+  },
   "porta": null,
   "secret": "t0pS3cr3t",
   "expiracao_token_minutos": 30
