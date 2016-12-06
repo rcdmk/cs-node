@@ -56,10 +56,12 @@ var Usuario = new mongoose.Schema({
   }
 });
 
+
 Usuario.set('toObject', {
   virtuals: true,
   versionKey: false
 });
+
 
 Usuario.pre('save', function(next) {
   if (this.isNew || this.isModified('senha')) {
@@ -110,4 +112,5 @@ Usuario.methods = {
   }
 };
 
-module.exports = mongoose.model('Usuario', Usuario);
+
+module.exports = mongoose.models['Usuario'] || mongoose.model('Usuario', Usuario);
