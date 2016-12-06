@@ -4,11 +4,11 @@ var expect = require('expect.js');
 var sinon = require('sinon');
 
 
-describe('Service Usuários', function() {
+describe('Service Usuários', function () {
   var ServiceClass, service, model, query, dadosUsuario, id_usuario, listaUsuarios;
   var fakes, callback;
 
-  before(function() {
+  before(function () {
     sinon.config = {
       useFakeTimers: false
     };
@@ -16,7 +16,7 @@ describe('Service Usuários', function() {
     ServiceClass = require('../../services/usuarios');
   });
 
-  beforeEach(function() {
+  beforeEach(function () {
     fakes = sinon.sandbox.create();
 
     query = {
@@ -40,29 +40,26 @@ describe('Service Usuários', function() {
         ddd: '11',
         numero: '12345678'
       }],
-      pegarJSON: function() {
+      pegarJSON: function () {
         return JSON.stringify(this);
       }
     };
 
     listaUsuarios = [dadosUsuario];
-    listaUsuarios.pegarJSON = function() {
-      return JSON.stringify(this);
-    };
 
     model = {
-      find: function(cb) {
-        setImmediate(function() {
+      find: function (cb) {
+        setImmediate(function () {
           cb(null, listaUsuarios);
         });
       },
-      create: function(usuario, cb) {
-        setImmediate(function() {
+      create: function (usuario, cb) {
+        setImmediate(function () {
           cb(null, dadosUsuario);
         });
       },
-      findById: function(usuario, cb) {
-        setImmediate(function() {
+      findById: function (usuario, cb) {
+        setImmediate(function () {
           cb(null, dadosUsuario);
         });
       }
@@ -74,20 +71,20 @@ describe('Service Usuários', function() {
   });
 
 
-  afterEach(function() {
+  afterEach(function () {
     fakes.restore();
   });
 
 
-  describe('ao executar registrar(usuario)', function() {
-    it('deve montar a query para o model corretamente', function(done) {
+  describe('ao executar registrar(usuario)', function () {
+    it('deve montar a query para o model corretamente', function (done) {
       var queryEsperada = query;
 
       var create = fakes.spy(model, 'create');
 
       service.registrar(query, callback);
 
-      setImmediate(function() {
+      setImmediate(function () {
         expect(create.callCount).to.be.equal(1);
         expect(create.calledWith(queryEsperada)).to.be.ok();
         done();
@@ -95,21 +92,23 @@ describe('Service Usuários', function() {
     });
 
 
-    it('deve retornar erro correto quando o model retornar erro', function(done) {
+    it('deve retornar erro correto quando o model retornar erro', function (done) {
       var erroEsperado = new Error('ERRO!!!!');
 
-      model.create = function(dados, cb) {
-        cb(erroEsperado);
-      };
+      fakes.stub(model, 'create').yields(erroEsperado);
 
-      service.registrar(query, function(err) {
-        expect(err).to.be.equal(erroEsperado);
+      service.registrar(query, callback);
+
+      setImmediate(function () {
+        expect(callback.callCount).to.be.equal(1);
+        expect(callback.getCall(0).args).to.have.length(1);
+        expect(callback.getCall(0).args[0]).to.be.equal(erroEsperado);
         done();
       });
     });
 
 
-    it('deve retornar os dados do usuário em caso de sucesso', function(done) {
+    it('deve retornar os dados do usuário em caso de sucesso', function (done) {
       var retornoEsperado = {
         id: 'id_usuario_no_banco',
         nome: 'nome usuario',
@@ -123,7 +122,7 @@ describe('Service Usuários', function() {
 
       service.registrar(query, callback);
 
-      setImmediate(function() {
+      setImmediate(function () {
         expect(callback.callCount).to.be.equal(1);
 
         var firstCall = callback.getCall(0);
@@ -145,11 +144,11 @@ describe('Service Usuários', function() {
   });
 
 
-  describe('ao executar obterTodos()', function() {
-    it('deve chamar a lista do model', function() {
+  describe('ao executar obterTodos()', function () {
+    it('deve chamar a lista do model', function () {
       var find = fakes.spy(model, 'find');
 
-      service.obterTodos();
+      service.obterTodos(callback);
 
       expect(find.callCount).to.be.equal(1);
 
@@ -157,41 +156,45 @@ describe('Service Usuários', function() {
     });
 
 
-    it('deve retornar erro correto quando o model retornar erro', function() {
+    it('deve retornar erro correto quando o model retornar erro', function (done) {
       var erroEsperado = new Error('ERRO!!!!');
 
-      var stub = fakes.stub(model, 'find').yields(erroEsperado);
-      var spyResponse = fakes.spy();
+      fakes.stub(model, 'find').yields(erroEsperado);
 
-      service.obterTodos(spyResponse);
+      service.obterTodos(callback);
 
-      expect(spyResponse.callCount).to.be.equal(1);
-      expect(spyResponse.calledWithExactly(erroEsperado)).to.be.ok();
-      stub.restore();
+      setImmediate(function () {
+        expect(callback.callCount).to.be.equal(1);
+        expect(callback.calledWithExactly(erroEsperado)).to.be.ok();
+        done();
+      });
     });
 
 
-    it('deve retornar sem erro e sem dados quando o model não retornar os dados do usuário', function() {
-      var stub = fakes.stub(model, 'find').yields();
-      var spyResponse = fakes.spy();
+    it('deve retornar sem erro e sem dados quando o model não retornar os dados do usuário', function (done) {
+      fakes.stub(model, 'find').yields();
 
-      service.obterTodos(spyResponse);
+      service.obterTodos(callback);
 
-      expect(spyResponse.callCount).to.be.equal(1);
-      expect(spyResponse.calledWithExactly(undefined)).to.be.ok();
+      setImmediate(function () {
+        expect(callback.callCount).to.be.equal(1);
+        expect(callback.calledWithExactly(undefined)).to.be.ok();
 
-      stub.restore();
+        done();
+      });
     });
 
 
-    it('deve retornar a lista de usuários em caso de sucesso', function(done) {
-      var retornoEsperado = listaUsuarios.pegarJSON();
+    it('deve retornar a lista de usuários em caso de sucesso', function (done) {
+      var retornoEsperado = listaUsuarios.map(function (u) {
+        return u.pegarJSON();
+      });
 
       var obterTodos = fakes.stub(service, 'obterTodos').yieldsAsync(null, listaUsuarios);
 
       service.obterTodos(callback);
 
-      setImmediate(function() {
+      setImmediate(function () {
         expect(callback.callCount).to.be.equal(1);
         expect(callback.calledWithExactly(null, retornoEsperado));
         obterTodos.restore();
@@ -201,46 +204,47 @@ describe('Service Usuários', function() {
   });
 
 
-  describe('ao executar obterPorId(id_usuario)', function() {
-    it('deve montar a query para o model corretamente', function() {
+  describe('ao executar obterPorId(id_usuario)', function () {
+    it('deve montar a query para o model corretamente', function () {
       var findById = fakes.spy(model, 'findById');
 
-      service.obterPorId(id_usuario);
+      service.obterPorId(id_usuario, callback);
 
       expect(findById.callCount).to.be.equal(1);
       expect(findById.calledWithExactly(id_usuario));
     });
 
 
-    it('deve retornar erro correto quando o model retornar erro', function(done) {
+    it('deve retornar erro correto quando o model retornar erro', function (done) {
       var erroEsperado = new Error('ERRO!!!!');
 
-      var findById = fakes.stub(model, 'findById').yieldsAsync(erroEsperado);
+      fakes.stub(model, 'findById').yieldsAsync(erroEsperado);
 
       service.obterPorId(id_usuario, callback);
 
-      setImmediate(function() {
+      setImmediate(function () {
         expect(callback.callCount).to.be.equal(1);
         expect(callback.calledWithExactly(erroEsperado)).to.be.ok();
         done();
       });
     });
 
-    it('deve retornar sem erro e sem dados quando o model não retornar os dados do usuário', function(done) {
-      model.findById = function(dados, cb) {
-        cb();
-      };
+    it('deve retornar sem erro e sem dados quando o model não retornar os dados do usuário', function (done) {
+      fakes.stub(model, 'findById').yields();
 
-      service.obterPorId(id_usuario, function(err, dados) {
-        expect(err).to.be(undefined);
-        expect(dados).to.be(undefined);
+      service.obterPorId(id_usuario, callback);
+
+      setImmediate(function () {
+        expect(callback.callCount).to.be.equal(1);
+        expect(callback.firstCall.args).to.have.length(1);
+        expect(callback.firstCall.args[0]).to.be(undefined);
         done();
       });
     });
 
 
-    it('deve retornar os dados do usuário em caso de sucesso', function(done) {
-      var retornoEsperado = {
+    it('deve retornar os dados do usuário em caso de sucesso', function (done) {
+      var retornoEsperado = JSON.stringify({
         id: 'id_usuario_no_banco',
         nome: 'nome usuario',
         email: 'email@teste.com',
@@ -249,17 +253,16 @@ describe('Service Usuários', function() {
           ddd: '11',
           numero: '12345678'
         }]
-      };
+      });
 
-      service.obterPorId(id_usuario, function(err, dados) {
-        dados = JSON.parse(dados);
+      service.obterPorId(id_usuario, callback);
 
-        expect(dados).to.have.property('id').equal(retornoEsperado.id);
-        expect(dados).to.have.property('email').equal(retornoEsperado.email);
-        expect(dados).to.have.property('senha').equal(retornoEsperado.senha);
-        expect(dados).to.have.property('telefone').eql(retornoEsperado.telefone);
-
-        done(err);
+      setImmediate(function () {
+        expect(callback.callCount).to.be.equal(1);
+        expect(callback.firstCall.args).to.have.length(2);
+        expect(callback.firstCall.args[0]).to.be(null);
+        expect(callback.firstCall.args[1]).to.be.equal(retornoEsperado);
+        done();
       });
     });
   });

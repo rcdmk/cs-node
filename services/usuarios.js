@@ -34,7 +34,11 @@ UsuariosService.prototype.obterTodos = function ObterTodosUsuarios(cb) {
       return cb(err);
     }
 
-    cb(null, dados.pegarJSON());
+    var lista = dados.map(function(u) {
+      return u.pegarJSON();
+    });
+
+    cb(null, lista);
   });
 };
 
