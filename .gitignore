@@ -246,3 +246,6 @@ ModelManifest.xml
 
 # Istanbul coverage files
 coverage/
+
+# VS Code Workspace config
+.vscode/
