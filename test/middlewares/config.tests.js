@@ -42,7 +42,7 @@ describe('Middleware injetar configurações na requisição', function () {
   it('deve injetar uma propriedade com a configuração atual na requisição', function (done) {
     middleware(req, null, function (err) {
       expect(req).to.have.property('config').equal(config);
-      done();
+      done(err);
     });
   });
 });

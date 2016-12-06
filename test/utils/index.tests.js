@@ -23,7 +23,7 @@ describe('Módulo Utilidades', function() {
     erros = [{
       erro: 1
     }];
-  })
+  });
 
   it('deve exportar um formatador de erros de validação', function() {
     expect(utils).to.have.property('formatarErrosValidacao');
@@ -45,7 +45,7 @@ describe('Módulo Utilidades', function() {
       res.status = function(status) {
         expect(status).to.be.equal(400);
         return this;
-      }
+      };
 
       utils.formatarErrosValidacao(res, erros);
     });

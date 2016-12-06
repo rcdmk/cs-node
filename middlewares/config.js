@@ -5,6 +5,8 @@ var obterConfig = require('../config');
 /**
  * Configura a aplicação, carregando opções do arquivo de configuração para o ambiente
  * @param app {Object} A aplicação Express
+ * @param env {String} O nome do ambiente de execução
+ * @remarks O middleware é plugado diretamente na aplicação
  */
 var ConfigurarApp = function configurarApp(app, env) {
 	var config = obterConfig(env);
@@ -23,7 +25,7 @@ var ConfigurarApp = function configurarApp(app, env) {
     req.config = config;
 
     next();
-  };
+  }
 
   app.use(injetarConfig);
 
