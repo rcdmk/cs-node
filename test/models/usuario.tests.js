@@ -3,15 +3,18 @@
 var expect = require('expect.js');
 var sinon = require('sinon');
 
+
+
 describe('Modelo de usuário', function() {
-  var model, modelInstance, fakes, clock, dataAtual, originalNow;
+  var model, modelInstance, fakes, utils, dataAtual, originalNow;
 
   before(function() {
-    this.timeout(3000);
+    // Necessário modificar no espaço global para as propriedades
+    // com valores padrão de data do esquema do modelo (mongoose)
+    dataAtual = new Date('2016-01-01 00:00:00.000-02:00');
     originalNow = Date.now;
-    dataAtual = new Date();
 
-    Date.now = function mockDateNow() {
+    Date.now = function() {
       return dataAtual;
     };
 
@@ -40,7 +43,6 @@ describe('Modelo de usuário', function() {
       expect(modelInstance).to.have.property('nome');
       expect(modelInstance.nome).to.be.a('string');
     });
-
 
     it('vazia por padrão', function() {
       expect(modelInstance.nome).to.be.equal('');
@@ -91,7 +93,7 @@ describe('Modelo de usuário', function() {
     });
 
     it('com data e hora atual por padrão', function() {
-      expect(modelInstance.data_criacao).to.be.equal(dataAtual);
+      expect(modelInstance.data_criacao).to.be.eql(dataAtual);
     });
   });
 });

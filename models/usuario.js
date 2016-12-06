@@ -41,7 +41,7 @@ var Usuario = new mongoose.Schema({
   data_criacao: {
     type: Date,
     required: true,
-    default: Date.now
+    default: () => Date.now()
   },
   data_atualizacao: {
     type: Date,
