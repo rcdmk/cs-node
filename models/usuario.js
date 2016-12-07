@@ -41,12 +41,12 @@ var Usuario = new mongoose.Schema({
   data_criacao: {
     type: Date,
     required: true,
-    default: () => Date.now()
+    default: function() { return Date.now(); }
   },
   data_atualizacao: {
     type: Date,
     required: true,
-    default: Date.now
+    default: function() { return Date.now(); }
   },
   ultimo_login: {
     type: Date
@@ -68,7 +68,7 @@ Usuario.pre('save', function(next) {
     this.senha = this.codificarSenha(this.senha);
   }
 
-  this.data_atualizacao = Date.now;
+  this.data_atualizacao = Date.now();
 
   next();
 });
@@ -113,4 +113,4 @@ Usuario.methods = {
 };
 
 
-module.exports = mongoose.models['Usuario'] || mongoose.model('Usuario', Usuario);
+module.exports = mongoose.models.Usuario || mongoose.model('Usuario', Usuario);
