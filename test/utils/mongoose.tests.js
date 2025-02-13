@@ -8,7 +8,7 @@ describe('Módulo de Configuração do Mongoose', function() {
     var modulo, mongooseMock, fakes, config;
 
     before(function() {
-        config = require('../../config/test.json');
+        config = require('../../config/TEST.json');
         modulo = rewire('../../utils/mongoose');
     });
 
