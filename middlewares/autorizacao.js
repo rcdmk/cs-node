@@ -13,7 +13,7 @@ var ConfigurarAutorizacao = function configurarAutorizacao(app) {
   	throw new Error('É necessário configurar a aplicação antes de executar este módulo!');
   }
 
-  var jwtMiddleware = jwt({ secret: appConfig.secret });
+  var jwtMiddleware = jwt.expressjwt({ secret: appConfig.secret, algorithms: ['HS256'] });
 
   // proteger rotas GET
 	app.get([
